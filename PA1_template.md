@@ -4,7 +4,7 @@ Jan 13th, 2015
 
 ## Loading and preprocessing the data
 
-### Unzip and loading the data
+. Unzip and loading the data
 
 ```r
 if(!file.exists("activity.csv")) unzip("activity.zip")
@@ -23,6 +23,20 @@ summary(dataset)
 ##  NA's   :2304    (Other)   :15840
 ```
 
+```r
+head(dataset)
+```
+
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
+```
+
 
 ## What is mean total number of steps taken per day?
 
@@ -36,7 +50,7 @@ barplot(sumData, main="Total number of steps taken each day",
         xlab="Date: 2012-10-01 to 2012-11-30", ylab="Steps")
 ```
 
-![plot of chunk unnamed-chunk-2](PA1_template_files/figure-html/unnamed-chunk-2.png) 
+<img src="PA1_template_files/figure-html/scatterplot.png" title="plot of chunk scatterplot" alt="plot of chunk scatterplot" style="display: block; margin: auto;" />
 
 ### 2. Calculate and report the mean and median total number of steps taken per day
 
@@ -46,7 +60,7 @@ barplot(meanData, main="Average of steps taken per day",
         xlab="Date: 2012-10-01 to 2012-11-30", ylab="Steps")
 ```
 
-![plot of chunk unnamed-chunk-3](PA1_template_files/figure-html/unnamed-chunk-3.png) 
+<img src="PA1_template_files/figure-html/unnamed-chunk-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" />
 
 ```r
 mean(meanData, na.rm=TRUE)
@@ -75,7 +89,7 @@ with(aggregate(steps ~ interval, data=dataset, mean, na.rm = T),
      xlab="Interval", ylab="Steps averaged across all days"))
 ```
 
-![plot of chunk unnamed-chunk-4](PA1_template_files/figure-html/unnamed-chunk-4.png) 
+<img src="PA1_template_files/figure-html/unnamed-chunk-2.png" title="plot of chunk unnamed-chunk-2" alt="plot of chunk unnamed-chunk-2" style="display: block; margin: auto;" />
 
 ### 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
@@ -151,7 +165,7 @@ barplot(sumData, main="Total steps taken each day\nWith missing data",
         xlab="Date: 2012-10-01 to 2012-11-30", ylab="Steps")
 ```
 
-![plot of chunk unnamed-chunk-9](PA1_template_files/figure-html/unnamed-chunk-9.png) 
+<img src="PA1_template_files/figure-html/unnamed-chunk-7.png" title="plot of chunk unnamed-chunk-7" alt="plot of chunk unnamed-chunk-7" style="display: block; margin: auto;" />
 
 . computing the mean of steps taken each day
 
@@ -167,7 +181,7 @@ barplot(meanData, main="Average steps taken per day\nWith missing data",
         xlab="Date: 2012-10-01 to 2012-11-30", ylab="Steps")
 ```
 
-![plot of chunk unnamed-chunk-10](PA1_template_files/figure-html/unnamed-chunk-10.png) 
+<img src="PA1_template_files/figure-html/unnamed-chunk-8.png" title="plot of chunk unnamed-chunk-8" alt="plot of chunk unnamed-chunk-8" style="display: block; margin: auto;" />
 
 . Computing the mean and median total number of steps taken per day
 
@@ -227,6 +241,5 @@ with(subset(aggregate(steps ~ interval + week, data = tidyData, mean),week=="wee
 with(subset(aggregate(steps ~ interval + week, data = tidyData, mean),week=="weekend"), plot(interval, steps, type="l", main="Average of steps across all weekend day", xlab="Interval", ylab="Steps"))
 ```
 
-![plot of chunk unnamed-chunk-13](PA1_template_files/figure-html/unnamed-chunk-13.png) 
+<img src="PA1_template_files/figure-html/unnamed-chunk-11.png" title="plot of chunk unnamed-chunk-11" alt="plot of chunk unnamed-chunk-11" style="display: block; margin: auto;" />
 
-re differences in activity patterns between weekdays and weekends?
