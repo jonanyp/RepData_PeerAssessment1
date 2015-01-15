@@ -4,9 +4,10 @@ Jan 13th, 2015
 
 ## Loading and preprocessing the data
 
+### Unzip and loading the data
 
 ```r
-##unzip("activity.zip")
+if(!file.exists("activity.csv")) unzip("activity.zip")
 dataset <- read.csv("activity.csv")
 summary(dataset)
 ```
@@ -25,28 +26,27 @@ summary(dataset)
 
 ## What is mean total number of steps taken per day?
 
+### In this part we're ignoring the missing values in the dataset
+### 1. Make a histogram of the total number of steps taken each day
+. computing the number of steps taken each day
 
 ```r
-##tidyData<-data[which(data$steps>=0),]
-
-## In this part we're ignoring the missing values in the dataset
-
-## computing the number of steps taken each day
 sumData<-with(dataset, tapply(steps, date, sum))
 barplot(sumData, main="Total number of steps taken each day",
         xlab="Date: 2012-10-01 to 2012-11-30", ylab="Steps")
 ```
 
-![plot of chunk unnamed-chunk-2](PA1_template_files/figure-html/unnamed-chunk-21.png) 
+![plot of chunk unnamed-chunk-2](PA1_template_files/figure-html/unnamed-chunk-2.png) 
+
+### 2. Calculate and report the mean and median total number of steps taken per day
 
 ```r
-## computing the mean of steps taken each day
 meanData<-with(dataset, tapply(steps, date, mean))
 barplot(meanData, main="Average of steps taken per day",
         xlab="Date: 2012-10-01 to 2012-11-30", ylab="Steps")
 ```
 
-![plot of chunk unnamed-chunk-2](PA1_template_files/figure-html/unnamed-chunk-22.png) 
+![plot of chunk unnamed-chunk-3](PA1_template_files/figure-html/unnamed-chunk-3.png) 
 
 ```r
 mean(meanData, na.rm=TRUE)
@@ -56,8 +56,18 @@ mean(meanData, na.rm=TRUE)
 ## [1] 37.38
 ```
 
+```r
+median(meanData, na.rm=TRUE)
+```
+
+```
+## [1] 37.38
+```
+
 
 ## What is the average daily activity pattern?
+
+### 1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
 ```r
 with(aggregate(steps ~ interval, data=dataset, mean, na.rm = T),
@@ -65,11 +75,22 @@ with(aggregate(steps ~ interval, data=dataset, mean, na.rm = T),
      xlab="Interval", ylab="Steps averaged across all days"))
 ```
 
-![plot of chunk unnamed-chunk-3](PA1_template_files/figure-html/unnamed-chunk-3.png) 
+![plot of chunk unnamed-chunk-4](PA1_template_files/figure-html/unnamed-chunk-4.png) 
+
+### 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+
+```r
+max(aggregate(steps ~ interval, data=dataset, mean, na.rm = T)$steps)
+```
+
+```
+## [1] 206.2
+```
+
 
 ## Imputing missing values
 
-### Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+### 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
 ```r
 sum(is.na(dataset$steps))
@@ -79,22 +100,22 @@ sum(is.na(dataset$steps))
 ## [1] 2304
 ```
 
-### Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+### 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+. Computing the mean for that 5-minute interval
 
 ```r
-## Computing the mean for that 5-minute interval
 library("plyr")
-dd<-dataset
+tidyData<-dd<-dataset
 pp <- ddply(dd, .(interval), summarize, means = mean(steps, na.rm=TRUE))
 ```
 
-### Create a new dataset that is equal to the original dataset but with the missing data filled in.
+### 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
+. Filling all the missing values of the dataset in new dataset
 
 ```r
-## Filling all the missing values of the dataset in new dataset
 l<-which(is.na(dataset))
-dataset$steps[l]<-pp$means[pp$interval %in% dataset$interval[l]]
-sum(is.na(dataset$steps))
+tidyData$steps[l]<-pp$means[pp$interval %in% dataset$interval[l]]
+sum(is.na(tidyData$steps))
 ```
 
 ```
@@ -102,7 +123,7 @@ sum(is.na(dataset$steps))
 ```
 
 ```r
-head(dataset)
+head(tidyData)
 ```
 
 ```
@@ -115,36 +136,69 @@ head(dataset)
 ## 6 2.09434 2012-10-01       25
 ```
 
-### Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+### 4 Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+. computing the number of steps taken each day
 
 ```r
-## computing the number of steps taken each day
+par(mfrow=c(1,2), mar=c(2,2,4,2))
+
+sumDataTidy<-with(tidyData, tapply(steps, date, sum))
+barplot(sumDataTidy, main="Total steps taken each day\nWithout missing data",
+        xlab="Date: 2012-10-01 to 2012-11-30", ylab="Steps")
+
 sumData<-with(dataset, tapply(steps, date, sum))
-barplot(sumData, main="Total number of steps taken each day",
+barplot(sumData, main="Total steps taken each day\nWith missing data",
         xlab="Date: 2012-10-01 to 2012-11-30", ylab="Steps")
 ```
 
-![plot of chunk unnamed-chunk-7](PA1_template_files/figure-html/unnamed-chunk-71.png) 
+![plot of chunk unnamed-chunk-9](PA1_template_files/figure-html/unnamed-chunk-9.png) 
+
+. computing the mean of steps taken each day
 
 ```r
-## computing the mean of steps taken each day
+par(mfrow=c(1,2), mar=c(2,2,4,2))
+
+meanDataTidy<-with(tidyData, tapply(steps, date, mean))
+barplot(meanDataTidy, main="Average steps taken per day\nWithout missing data",
+        xlab="Date: 2012-10-01 to 2012-11-30", ylab="Steps")
+
 meanData<-with(dataset, tapply(steps, date, mean))
-barplot(meanData, main="Average of steps taken per day",
+barplot(meanData, main="Average steps taken per day\nWith missing data",
         xlab="Date: 2012-10-01 to 2012-11-30", ylab="Steps")
 ```
 
-![plot of chunk unnamed-chunk-7](PA1_template_files/figure-html/unnamed-chunk-72.png) 
+![plot of chunk unnamed-chunk-10](PA1_template_files/figure-html/unnamed-chunk-10.png) 
+
+. Computing the mean and median total number of steps taken per day
+
+```r
+mean(meanDataTidy, na.rm=TRUE)
+```
+
+```
+## [1] 37.38
+```
+
+```r
+median(meanDataTidy, na.rm=TRUE)
+```
+
+```
+## [1] 37.38
+```
+
+
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-### Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+### 1. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
 
 ```r
-dataset$week<-as.character(weekdays(as.Date(dataset$date)))
-dataset$week[!dataset$week %in% c("sábado","domingo")]<-"weekday"
-dataset$week[dataset$week %in% c("sábado","domingo")]<-"weekend"
-dataset$week<-factor(dataset$week, levels = c("weekday", "weekend"))
-table(dataset$week)
+tidyData$week<-as.character(weekdays(as.Date(tidyData$date)))
+tidyData$week[!tidyData$week %in% c("sábado","domingo")]<-"weekday"
+tidyData$week[tidyData$week %in% c("sábado","domingo")]<-"weekend"
+tidyData$week<-factor(tidyData$week, levels = c("weekday", "weekend"))
+table(tidyData$week)
 ```
 
 ```
@@ -154,7 +208,7 @@ table(dataset$week)
 ```
 
 ```r
-str(dataset)
+str(tidyData)
 ```
 
 ```
@@ -165,7 +219,14 @@ str(dataset)
 ##  $ week    : Factor w/ 2 levels "weekday","weekend": 1 1 1 1 1 1 1 1 1 1 ...
 ```
 
-### Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
+### 2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
 
+```r
+par(mfrow=c(2,1), mar=c(4,4,3,2))
+with(subset(aggregate(steps ~ interval + week, data = tidyData, mean),week=="weekday"), plot(interval, steps, type="l", main="Average of steps across all weekday day", xlab="Interval", ylab="Steps"))
+with(subset(aggregate(steps ~ interval + week, data = tidyData, mean),week=="weekend"), plot(interval, steps, type="l", main="Average of steps across all weekend day", xlab="Interval", ylab="Steps"))
+```
+
+![plot of chunk unnamed-chunk-13](PA1_template_files/figure-html/unnamed-chunk-13.png) 
 
 re differences in activity patterns between weekdays and weekends?
